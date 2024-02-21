@@ -28,14 +28,17 @@ func FuncToCall(arr, err []int) (int, int) {
 
 }
 
-func CallWithProbability(fn func(), probability float64) {
+func CallWithProbability(fn func(), probability float64) (err string) {
 	// Генерируем случайное число от 0 до 1
 	randomNum := rand.Float64()
 
 	// Проверяем, выполнять ли функцию
 	if randomNum < probability {
 		fn()
+		err = "Обнаружена ошибка"
 	} else {
 		fmt.Println("Ошибки не произошло")
+		err = "Ошибки не произошло"
 	}
+	return err
 }

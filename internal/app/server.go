@@ -27,7 +27,7 @@ func (app *Application) Run() {
 	// docs.SwaggerInfo.BasePath = "/"
 	// r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	// Группа запросов для периода
-	r.GET("/datalink", app.GetPeriods)
+	r.POST("/datalink", app.GetPeriods)
 	addr := fmt.Sprintf("%s:%d", app.Config.ServiceHost, app.Config.ServicePort)
 	r.Run(addr)
 	log.Println("Server down")

@@ -1,6 +1,8 @@
 package app
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
 	"math/rand"
@@ -9,11 +11,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/lud0m4n/Network/internal/http/funcs"
+	"github.com/lud0m4n/Network/internal/model"
 )
 
 const (
 	GX                  = 19
 	PROBABILITY_ONE_BIT = 0.09
+	SEND_PROBABILITY    = 0.99
 )
 
 // @Summary Получение списка периодов
@@ -27,11 +31,18 @@ const (
 func (app *Application) GetPeriods(c *gin.Context) {
 	start := time.Now()
 	rand.Seed(time.Now().UnixNano())
+	var segment model.Segment
+	if err := c.BindJSON(&segment); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	errArr1Krat := []int{1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384}
-	text := "Фрукты, много fruit? Длинный text для test ъъъъььья" // Ваш текст
+
+	text := segment.Message
 	fmt.Println("Начальный текс:", text)
-	bytes := []byte(text)
-	bin := funcs.ByteToBin(bytes)
+	byte_code := []byte(text)
+	bin := funcs.ByteToBin(byte_code)
 	var boolMatrix [][]bool
 	for i := 0; i < len(bin); i += 11 {
 		end := i + 11
@@ -46,7 +57,7 @@ func (app *Application) GetPeriods(c *gin.Context) {
 	decArr := funcs.BinaryArrayToDecimalArray(boolMatrix)
 	decArr = encode(decArr)
 	// Вызываем функцию с вероятностью 9%
-	funcs.CallWithProbability(func() {
+	err := funcs.CallWithProbability(func() {
 		result, i := funcs.FuncToCall(decArr, errArr1Krat)
 
 		// fmt.Println("Ошибка в элементе номер:", i)
@@ -59,8 +70,36 @@ func (app *Application) GetPeriods(c *gin.Context) {
 	finalByte := funcs.BinToByte(finalBin)
 	finalText := string(finalByte)
 	log.Printf("time %s\n", time.Since(start))
+	segment.Message = finalText
+	c.JSON(http.StatusOK, gin.H{"segment": segment, "error": err})
 
-	c.JSON(http.StatusOK, finalText)
+	if rand.Float64() < SEND_PROBABILITY {
+		// Кодируем JSON данные
+		jsonData, err := json.Marshal(segment)
+		if err != nil {
+			fmt.Println("Ошибка при кодировании JSON:", err)
+			return
+		}
+
+		// Выполняем POST запрос на указанный URL
+		url := "http://localhost:8082/api/get-message"
+		resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
+		if err != nil {
+			fmt.Println("Ошибка при выполнении запроса:", err)
+			return
+		}
+		defer resp.Body.Close()
+
+		// Проверяем статус код ответа
+		if resp.StatusCode != http.StatusOK {
+			fmt.Println("Ошибка: неправильный статус код", resp.StatusCode)
+			return
+		}
+
+		fmt.Println("Запрос успешно выполнен")
+	} else {
+		fmt.Println("Запрос не был отправлен (вероятность 1%)")
+	}
 }
 
 func encode(decArr []int) []int {
