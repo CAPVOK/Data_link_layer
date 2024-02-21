@@ -9,7 +9,7 @@ const (
 	GX = 19
 )
 
-func binToByte(binStr string) []byte {
+func BinToByte(binStr string) []byte {
 	// Вычисляем длину массива байтов
 	byteLen := (len(binStr) + 7) / 8
 	bytes := make([]byte, byteLen)
@@ -40,36 +40,36 @@ func binToByte(binStr string) []byte {
 	return bytes
 }
 
-func decimalArrayToBinary(decArr []int, last_len int) (result string) {
+func DecimalArrayToBinary(decArr []int, last_len int) (result string) {
 	for i := range decArr {
 		if i == len(decArr)-1 {
-			result += strings.Repeat("0", (last_len - len(decimalToBinary(decArr[i]))))
-			result += decimalToBinary(decArr[i])
+			result += strings.Repeat("0", (last_len - len(DecimalToBinary(decArr[i]))))
+			result += DecimalToBinary(decArr[i])
 		} else {
-			result += strings.Repeat("0", (11 - len(decimalToBinary(decArr[i]))))
-			result += decimalToBinary(decArr[i])
+			result += strings.Repeat("0", (11 - len(DecimalToBinary(decArr[i]))))
+			result += DecimalToBinary(decArr[i])
 		}
 	}
 	return result
 }
 
-func binaryArrayToDecimalArray(binaryArray [][]bool) []int {
+func BinaryArrayToDecimalArray(binaryArray [][]bool) []int {
 	decimalArray := make([]int, len(binaryArray))
 	for i, arr := range binaryArray {
-		decimalArray[i] = boolMatrixayToDecimal(arr)
+		decimalArray[i] = BoolMatrixayToDecimal(arr)
 	}
 	return decimalArray
 }
 
-func boolMatrixayToDecimal(boolMatrixay []bool) int {
+func BoolMatrixayToDecimal(boolMatrixay []bool) int {
 	var decimal int
 	for _, bit := range boolMatrixay {
-		decimal = (decimal << 1) | btoi(bit)
+		decimal = (decimal << 1) | Btoi(bit)
 	}
 	return decimal
 }
 
-func btoi(b bool) int {
+func Btoi(b bool) int {
 	if b {
 		return 1
 	}
@@ -77,7 +77,7 @@ func btoi(b bool) int {
 }
 
 // Переводим текст в биты
-func byteToBin(bytes []byte) []bool {
+func ByteToBin(bytes []byte) []bool {
 	bits := make([]bool, len(bytes)*8)
 	for i, b := range bytes {
 		for j := 0; j < 8; j++ {
@@ -108,7 +108,7 @@ func GetRemainder(x, d string) string {
 	for {
 		for i = 0; i < m; i++ {
 			// Прибавляем делитель в текущей позиции указателя
-			arr[z+i] = plus(arr[z+i], d[i])
+			arr[z+i] = Plus(arr[z+i], d[i])
 		}
 		for arr[z] == '0' {
 			z++ // Сдвиг указателя влево, до первой единицы
@@ -124,7 +124,7 @@ func GetRemainder(x, d string) string {
 	return string(arr)
 }
 
-func plus(a, b byte) byte {
+func Plus(a, b byte) byte {
 	if a == '0' && b == '0' {
 		return '0'
 	}
@@ -134,17 +134,17 @@ func plus(a, b byte) byte {
 	return '1'
 }
 
-func decimalToBinary(dec int) string {
+func DecimalToBinary(dec int) string {
 	return strconv.FormatInt(int64(dec), 2)
 }
-func binaryToDecimal(bin string) int {
+func BinaryToDecimal(bin string) int {
 	dec, err := strconv.ParseInt(bin, 2, 64)
 	if err != nil {
 		return 0
 	}
 	return int(dec)
 }
-func polynom_vector(err string) (result int) {
+func Polynom_vector(err string) (result int) {
 	lastFour := err[len(err)-4:]
 	if lastFour == "0001" {
 		result = 1

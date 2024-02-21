@@ -9,7 +9,7 @@ const (
 	PROBABILITY_ONE_BIT = 0.09
 )
 
-func funcToCall(arr, err []int) (int, int) {
+func FuncToCall(arr, err []int) (int, int) {
 	// Выбираем случайный элемент из списка
 	randomIndex := rand.Intn(len(arr))
 	randomElement := arr[randomIndex]
@@ -28,7 +28,7 @@ func funcToCall(arr, err []int) (int, int) {
 
 }
 
-func callWithProbability(fn func(), probability float64) {
+func CallWithProbability(fn func(), probability float64) {
 	// Генерируем случайное число от 0 до 1
 	randomNum := rand.Float64()
 
