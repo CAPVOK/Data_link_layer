@@ -28,7 +28,7 @@ const (
 // @Success 200 {object} model.PeriodGetResponse "Список периодов"
 // @Failure 500 {object} model.PeriodGetResponse "Ошибка сервера"
 // @Router /period [get]
-func (app *Application) GetPeriods(c *gin.Context) {
+func (app *Application) PostDataLink(c *gin.Context) {
 	start := time.Now()
 	rand.Seed(time.Now().UnixNano())
 	var segment model.Segment
