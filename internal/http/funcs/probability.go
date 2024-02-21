@@ -12,7 +12,14 @@ const (
 func FuncToCall(arr, err []int) (int, int) {
 	// Выбираем случайный элемент из списка
 	randomIndex := rand.Intn(len(arr))
-	randomElement := arr[randomIndex]
+	var randomElement int
+	for {
+		randomElement = arr[randomIndex]
+		if randomElement != 0 {
+			break
+		}
+		randomIndex = rand.Intn(len(arr))
+	}
 
 	var true_err []int
 	for _, num := range err {
@@ -28,17 +35,17 @@ func FuncToCall(arr, err []int) (int, int) {
 
 }
 
-func CallWithProbability(fn func(), probability float64) (err string) {
+func CallWithProbability(fn func(), probability float64) (err bool) {
 	// Генерируем случайное число от 0 до 1
 	randomNum := rand.Float64()
 
 	// Проверяем, выполнять ли функцию
 	if randomNum < probability {
 		fn()
-		err = "Обнаружена ошибка"
+		err = true
 	} else {
 		fmt.Println("Ошибки не произошло")
-		err = "Ошибки не произошло"
+		err = false
 	}
 	return err
 }

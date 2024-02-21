@@ -54,26 +54,19 @@ func DecimalArrayToBinary(decArr []int, last_len int) (result string) {
 }
 
 func BinaryArrayToDecimalArray(binaryArray [][]bool) []int {
-	decimalArray := make([]int, len(binaryArray))
-	for i, arr := range binaryArray {
-		decimalArray[i] = BoolMatrixayToDecimal(arr)
+	var decimalArray []int
+	for _, row := range binaryArray {
+		var decimal int
+		for _, val := range row {
+			if val {
+				decimal = (decimal << 1) | 1
+			} else {
+				decimal = decimal << 1
+			}
+		}
+		decimalArray = append(decimalArray, decimal)
 	}
 	return decimalArray
-}
-
-func BoolMatrixayToDecimal(boolMatrixay []bool) int {
-	var decimal int
-	for _, bit := range boolMatrixay {
-		decimal = (decimal << 1) | Btoi(bit)
-	}
-	return decimal
-}
-
-func Btoi(b bool) int {
-	if b {
-		return 1
-	}
-	return 0
 }
 
 // Переводим текст в биты
@@ -106,6 +99,10 @@ func GetRemainder(x, d string) string {
 	arr = []byte(r)
 
 	for {
+		if x == "0" {
+			arr = []byte{48, 48, 48, 48}
+			break
+		}
 		for i = 0; i < m; i++ {
 			// Прибавляем делитель в текущей позиции указателя
 			arr[z+i] = Plus(arr[z+i], d[i])
@@ -121,7 +118,7 @@ func GetRemainder(x, d string) string {
 		}
 	}
 
-	return string(arr)
+	return string(arr)[(len(string(arr)) - 4):]
 }
 
 func Plus(a, b byte) byte {

@@ -74,10 +74,16 @@ func (app *Application) PostDataLink(c *gin.Context) {
 	fmt.Println(err)
 	// c.JSON(http.StatusOK, gin.H{"segment": segment, "error": err})
 	c.JSON(http.StatusOK, gin.H{"message": "Успешно"})
-
+	var segmentSend model.SegmentSend
+	segmentSend.AmountOfSegments = segment.AmountOfSegments
+	segmentSend.Error = err
+	segmentSend.Message = segment.Message
+	segmentSend.SegmentNum = segment.SegmentNum
+	segmentSend.Sender = segment.Sender
+	segmentSend.Timestamp = segment.Timestamp
 	if rand.Float64() < SEND_PROBABILITY {
 		// Кодируем JSON данные
-		jsonData, err := json.Marshal(segment)
+		jsonData, err := json.Marshal(segmentSend)
 		if err != nil {
 			fmt.Println("Ошибка при кодировании JSON:", err)
 			return
@@ -109,7 +115,9 @@ func encode(decArr []int) []int {
 		decArr[i] = num << 4
 		gx := funcs.DecimalToBinary(GX)
 		mod := funcs.DecimalToBinary(decArr[i])
-		decArr[i] = decArr[i] + funcs.BinaryToDecimal(funcs.GetRemainder(mod, gx))
+		if decArr[i] != 0 {
+			decArr[i] = funcs.BinaryToDecimal(funcs.DecimalToBinary(decArr[i])[:(len(funcs.DecimalToBinary(decArr[i]))-4)] + funcs.GetRemainder(mod, gx))
+		}
 	}
 	return decArr
 }
@@ -118,12 +126,15 @@ func decode(decArr []int) []int {
 	for i := range decArr {
 		gx := funcs.DecimalToBinary(GX)
 		mod := funcs.DecimalToBinary(decArr[i])
-		// fmt.Println(DecimalToBinary(decArr[i]))
-		// fmt.Println(DecimalToBinary(GX))
+		// fmt.Println(decimalToBinary(decArr[i]))
+		// fmt.Println(decimalToBinary(GX))
 		// fmt.Println(GetRemainder(mod, gx))
 		ex := funcs.Polynom_vector(funcs.GetRemainder(mod, gx))
 		decArr[i] = decArr[i] ^ ex
-		decArr[i] = funcs.BinaryToDecimal(funcs.DecimalToBinary(decArr[i])[:len(funcs.DecimalToBinary(decArr[i]))-4])
+		if decArr[i] != 0 {
+			decArr[i] = funcs.BinaryToDecimal(funcs.DecimalToBinary(decArr[i])[:len(funcs.DecimalToBinary(decArr[i]))-4])
+		}
+
 	}
 	return decArr
 }
