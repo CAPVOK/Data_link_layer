@@ -72,6 +72,7 @@ func (app *Application) PostDataLink(c *gin.Context) {
 	log.Printf("time %s\n", time.Since(start))
 	segment.Message = finalText
 	fmt.Println(err)
+	// c.JSON(http.StatusOK, gin.H{"segment": segment, "error": err})
 	c.JSON(http.StatusOK, gin.H{"message": "Успешно"})
 
 	if rand.Float64() < SEND_PROBABILITY {
