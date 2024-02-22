@@ -5,21 +5,41 @@ import (
 	"math/rand"
 )
 
-func FuncToCall(arr, err []int) (int, int) {
+func FuncToCall(arr, err []int, last_len int) (int, int) {
 	// Выбираем случайный элемент из списка
 	randomIndex := rand.Intn(len(arr))
 	randomElement := arr[randomIndex]
 
 	var true_err []int
-	if randomElement == 0 {
-		true_err = append(true_err, err[0])
-	}
-
-	for _, num := range err {
-		if num <= randomElement {
-			true_err = append(true_err, num)
+	if randomIndex == len(arr)-1 {
+		for i, _ := range err {
+			if i == last_len-1 {
+				for j := 0; j <= i; j++ {
+					true_err = append(true_err, err[j])
+				}
+			}
 		}
+	} else {
+		true_err = err
 	}
+	// else {
+	// 	for i, _ := range err {
+	// 		if i == 15 {
+	// 			for j := 0; j <= i; j++ {
+	// 				true_err = append(true_err, err[j])
+	// 			}
+
+	// 		}
+	// 	}
+	// }
+	// else {
+	// 	for _, num := range err {
+	// 		if num <= randomElement {
+	// 			true_err = append(true_err, num)
+	// 		}
+	// 	}
+	// }
+
 	// Выбираем случайное число из списка, удовлетворяющее условиям
 	randomNumberIndex := rand.Intn(len(true_err))
 	randomErr := true_err[randomNumberIndex]

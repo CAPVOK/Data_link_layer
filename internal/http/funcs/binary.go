@@ -80,11 +80,15 @@ func GetRemainder(x, d string) string {
 	var r string
 	var n, m, z, i int
 	var arr []byte
+	var zeroes string
+	if len(x) < 5 {
+		zeroes += strings.Repeat("0", (5 - len(x)))
+		x = zeroes + x
+	}
 
 	z = 0
 	n = len(x)
 	m = len(d)
-
 	// Инициализация
 	for i = 0; i < n; i++ {
 		if x[i] != '0' && x[i] != '1' {

@@ -53,8 +53,7 @@ func (app *Application) PostDataLink(c *gin.Context) {
 	decArr = encode(decArr)
 	// Вызываем функцию с вероятностью 9%
 	err := funcs.CallWithProbability(func() {
-		result, i := funcs.FuncToCall(decArr, errArr1Krat)
-
+		result, i := funcs.FuncToCall(decArr, errArr1Krat, last_len)
 		// fmt.Println("Ошибка в элементе номер:", i)
 		fmt.Printf("Элемент до ошибки:%b \n", decArr[i])
 		fmt.Printf("Элемент с ошибкой:%b \n", result)
