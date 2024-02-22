@@ -1,0 +1,44 @@
+definitions:
+  model.Segment:
+    properties:
+      amountOfSegments:
+        type: integer
+      message:
+        type: string
+      segmentNum:
+        type: integer
+      sender:
+        type: string
+      timestamp:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/datalink:
+    post:
+      consumes:
+      - application/json
+      description: Кодирует данные, вносит ошибку, испарвляет и отправляет в ответ
+      parameters:
+      - description: Пользовательский объект в формате JSON
+        in: body
+        name: period
+        required: true
+        schema:
+          $ref: '#/definitions/model.Segment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешно
+          schema:
+            $ref: '#/definitions/model.Segment'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/model.Segment'
+      summary: Кодирование на канальном уровне
+      tags:
+      - Канальный уровень
+swagger: "2.0"

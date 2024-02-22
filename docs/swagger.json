@@ -1,0 +1,70 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/api/datalink": {
+            "post": {
+                "description": "Кодирует данные, вносит ошибку, испарвляет и отправляет в ответ",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Канальный уровень"
+                ],
+                "summary": "Кодирование на канальном уровне",
+                "parameters": [
+                    {
+                        "description": "Пользовательский объект в формате JSON",
+                        "name": "period",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Segment"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешно",
+                        "schema": {
+                            "$ref": "#/definitions/model.Segment"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/model.Segment"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.Segment": {
+            "type": "object",
+            "properties": {
+                "amountOfSegments": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "segmentNum": {
+                    "type": "integer"
+                },
+                "sender": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

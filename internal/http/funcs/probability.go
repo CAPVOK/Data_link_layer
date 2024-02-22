@@ -5,23 +5,16 @@ import (
 	"math/rand"
 )
 
-const (
-	PROBABILITY_ONE_BIT = 0.09
-)
-
 func FuncToCall(arr, err []int) (int, int) {
 	// Выбираем случайный элемент из списка
 	randomIndex := rand.Intn(len(arr))
-	var randomElement int
-	for {
-		randomElement = arr[randomIndex]
-		if randomElement != 0 {
-			break
-		}
-		randomIndex = rand.Intn(len(arr))
-	}
+	randomElement := arr[randomIndex]
 
 	var true_err []int
+	if randomElement == 0 {
+		true_err = append(true_err, err[0])
+	}
+
 	for _, num := range err {
 		if num <= randomElement {
 			true_err = append(true_err, num)

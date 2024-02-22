@@ -14,20 +14,15 @@ import (
 	"github.com/lud0m4n/Network/internal/model"
 )
 
-const (
-	GX                  = 19
-	PROBABILITY_ONE_BIT = 0.09
-	SEND_PROBABILITY    = 0.99
-)
-
-// @Summary Получение списка периодов
-// @Description Возращает список всех активных периодов
-// @Tags Период
+// @Summary Кодирование на канальном уровне
+// @Description Кодирует данные, вносит ошибку, испарвляет и отправляет в ответ
+// @Tags Канальный уровень
+// @Accept json
 // @Produce json
-// @Param searchName query string false "Название периода" Format(email)
-// @Success 200 {object} model.PeriodGetResponse "Список периодов"
-// @Failure 500 {object} model.PeriodGetResponse "Ошибка сервера"
-// @Router /period [get]
+// @Param period body model.Segment true "Пользовательский объект в формате JSON"
+// @Success 200 {object} model.Segment "Успешно"
+// @Failure 500 {object} model.Segment "Внутренняя ошибка сервера"
+// @Router /api/datalink [post]
 func (app *Application) PostDataLink(c *gin.Context) {
 	start := time.Now()
 	rand.Seed(time.Now().UnixNano())
@@ -64,7 +59,7 @@ func (app *Application) PostDataLink(c *gin.Context) {
 		fmt.Printf("Элемент до ошибки:%b \n", decArr[i])
 		fmt.Printf("Элемент с ошибкой:%b \n", result)
 		decArr[i] = result
-	}, PROBABILITY_ONE_BIT)
+	}, model.PROBABILITY_ONE_BIT)
 	decArr = decode(decArr)
 	finalBin := funcs.DecimalArrayToBinary(decArr, last_len)
 	finalByte := funcs.BinToByte(finalBin)
@@ -72,6 +67,7 @@ func (app *Application) PostDataLink(c *gin.Context) {
 	log.Printf("time %s\n", time.Since(start))
 	segment.Message = finalText
 	fmt.Println(err)
+	fmt.Println(finalText)
 	// c.JSON(http.StatusOK, gin.H{"segment": segment, "error": err})
 	c.JSON(http.StatusOK, gin.H{"message": "Успешно"})
 	var segmentSend model.SegmentSend
@@ -81,7 +77,7 @@ func (app *Application) PostDataLink(c *gin.Context) {
 	segmentSend.SegmentNum = segment.SegmentNum
 	segmentSend.Sender = segment.Sender
 	segmentSend.Timestamp = segment.Timestamp
-	if rand.Float64() < SEND_PROBABILITY {
+	if rand.Float64() < model.SEND_PROBABILITY {
 		// Кодируем JSON данные
 		jsonData, err := json.Marshal(segmentSend)
 		if err != nil {
@@ -113,7 +109,7 @@ func (app *Application) PostDataLink(c *gin.Context) {
 func encode(decArr []int) []int {
 	for i, num := range decArr {
 		decArr[i] = num << 4
-		gx := funcs.DecimalToBinary(GX)
+		gx := funcs.DecimalToBinary(model.GX)
 		mod := funcs.DecimalToBinary(decArr[i])
 		if decArr[i] != 0 {
 			decArr[i] = funcs.BinaryToDecimal(funcs.DecimalToBinary(decArr[i])[:(len(funcs.DecimalToBinary(decArr[i]))-4)] + funcs.GetRemainder(mod, gx))
@@ -124,7 +120,7 @@ func encode(decArr []int) []int {
 
 func decode(decArr []int) []int {
 	for i := range decArr {
-		gx := funcs.DecimalToBinary(GX)
+		gx := funcs.DecimalToBinary(model.GX)
 		mod := funcs.DecimalToBinary(decArr[i])
 		// fmt.Println(decimalToBinary(decArr[i]))
 		// fmt.Println(decimalToBinary(GX))

@@ -5,10 +5,6 @@ import (
 	"strings"
 )
 
-const (
-	GX = 19
-)
-
 func BinToByte(binStr string) []byte {
 	// Вычисляем длину массива байтов
 	byteLen := (len(binStr) + 7) / 8
@@ -101,6 +97,9 @@ func GetRemainder(x, d string) string {
 	for {
 		if x == "0" {
 			arr = []byte{48, 48, 48, 48}
+			break
+		} else if x == "1" {
+			arr = []byte{48, 48, 48, 49}
 			break
 		}
 		for i = 0; i < m; i++ {
