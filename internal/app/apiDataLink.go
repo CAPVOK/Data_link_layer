@@ -93,7 +93,7 @@ func (app *Application) PostDataLink(c *gin.Context) {
 		resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
 		if err != nil {
 			fmt.Println("Ошибка при выполнении запроса:", err)
-			c.JSON(400, ResponseMessage{Message: "Неправильный формат"})
+			c.JSON(400, ResponseMessage{Message: "Транспортный уровень не запущен"})
 			return
 		}
 		defer resp.Body.Close()
