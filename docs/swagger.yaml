@@ -1,4 +1,9 @@
 definitions:
+  app.ResponseMessage:
+    properties:
+      message:
+        type: string
+    type: object
   model.Segment:
     properties:
       amountOfSegments:
@@ -19,11 +24,12 @@ paths:
     post:
       consumes:
       - application/json
-      description: Кодирует данные, вносит ошибку, испарвляет и отправляет в ответ
+      description: Кодирует данные, вносит ошибку, декодирует с исправлением, теряет
+        с заданной вероятностью и отправляет в ответ
       parameters:
       - description: Пользовательский объект в формате JSON
         in: body
-        name: period
+        name: segment
         required: true
         schema:
           $ref: '#/definitions/model.Segment'
@@ -33,12 +39,16 @@ paths:
         "200":
           description: Успешно
           schema:
-            $ref: '#/definitions/model.Segment'
+            $ref: '#/definitions/app.ResponseMessage'
+        "400":
+          description: Некорректный запрос
+          schema:
+            $ref: '#/definitions/app.ResponseMessage'
         "500":
           description: Внутренняя ошибка сервера
           schema:
-            $ref: '#/definitions/model.Segment'
-      summary: Кодирование на канальном уровне
+            $ref: '#/definitions/app.ResponseMessage'
+      summary: Передача данных на канальном уровне
       tags:
-      - Канальный уровень
+      - DataLink
 swagger: "2.0"

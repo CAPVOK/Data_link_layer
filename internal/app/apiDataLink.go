@@ -14,24 +14,28 @@ import (
 	"github.com/lud0m4n/Network/internal/model"
 )
 
-// @Summary Кодирование на канальном уровне
-// @Description Кодирует данные, вносит ошибку, испарвляет и отправляет в ответ
-// @Tags Канальный уровень
+type ResponseMessage struct {
+	Message string `json:"message"`
+}
+
+// @Summary Передача данных на канальном уровне
+// @Description Кодирует данные, вносит ошибку, декодирует с исправлением, теряет с заданной вероятностью и отправляет в ответ
+// @Tags DataLink
 // @Accept json
 // @Produce json
-// @Param period body model.Segment true "Пользовательский объект в формате JSON"
-// @Success 200 {object} model.Segment "Успешно"
-// @Failure 500 {object} model.Segment "Внутренняя ошибка сервера"
+// @Param segment body model.Segment true "Пользовательский объект в формате JSON"
+// @Success 200 {object} ResponseMessage "Успешно"
+// @Failure 400 {object} ResponseMessage "Некорректный запрос"
+// @Failure 500 {object} ResponseMessage "Внутренняя ошибка сервера"
 // @Router /api/datalink [post]
 func (app *Application) PostDataLink(c *gin.Context) {
 	start := time.Now()
 	rand.Seed(time.Now().UnixNano())
 	var segment model.Segment
 	if err := c.BindJSON(&segment); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, ResponseMessage{Message: "Неправильный формат"})
 		return
 	}
-
 	errArr1Krat := []int{1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384}
 
 	text := segment.Message
@@ -68,7 +72,6 @@ func (app *Application) PostDataLink(c *gin.Context) {
 	fmt.Println(err)
 	fmt.Println(finalText)
 	// c.JSON(http.StatusOK, gin.H{"segment": segment, "error": err})
-	c.JSON(http.StatusOK, gin.H{"message": "Успешно"})
 	var segmentSend model.SegmentSend
 	segmentSend.AmountOfSegments = segment.AmountOfSegments
 	segmentSend.Error = err
@@ -81,6 +84,7 @@ func (app *Application) PostDataLink(c *gin.Context) {
 		jsonData, err := json.Marshal(segmentSend)
 		if err != nil {
 			fmt.Println("Ошибка при кодировании JSON:", err)
+			c.JSON(500, ResponseMessage{Message: "Внутренняя ошибка сервера"})
 			return
 		}
 
@@ -89,6 +93,7 @@ func (app *Application) PostDataLink(c *gin.Context) {
 		resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
 		if err != nil {
 			fmt.Println("Ошибка при выполнении запроса:", err)
+			c.JSON(400, ResponseMessage{Message: "Неправильный формат"})
 			return
 		}
 		defer resp.Body.Close()
@@ -96,10 +101,12 @@ func (app *Application) PostDataLink(c *gin.Context) {
 		// Проверяем статус код ответа
 		if resp.StatusCode != http.StatusOK {
 			fmt.Println("Ошибка: неправильный статус код", resp.StatusCode)
+			c.JSON(400, ResponseMessage{Message: "Неправильный формат"})
 			return
 		}
 
 		fmt.Println("Запрос успешно выполнен")
+		c.JSON(http.StatusOK, ResponseMessage{Message: "Успешно"})
 	} else {
 		fmt.Println("Запрос не был отправлен (вероятность 1%)")
 	}

@@ -17,7 +17,7 @@ const docTemplate = `{
     "paths": {
         "/api/datalink": {
             "post": {
-                "description": "Кодирует данные, вносит ошибку, испарвляет и отправляет в ответ",
+                "description": "Кодирует данные, вносит ошибку, декодирует с исправлением, теряет с заданной вероятностью и отправляет в ответ",
                 "consumes": [
                     "application/json"
                 ],
@@ -25,13 +25,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Канальный уровень"
+                    "DataLink"
                 ],
-                "summary": "Кодирование на канальном уровне",
+                "summary": "Передача данных на канальном уровне",
                 "parameters": [
                     {
                         "description": "Пользовательский объект в формате JSON",
-                        "name": "period",
+                        "name": "segment",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -43,13 +43,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Успешно",
                         "schema": {
-                            "$ref": "#/definitions/model.Segment"
+                            "$ref": "#/definitions/app.ResponseMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Некорректный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/app.ResponseMessage"
                         }
                     },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
-                            "$ref": "#/definitions/model.Segment"
+                            "$ref": "#/definitions/app.ResponseMessage"
                         }
                     }
                 }
@@ -57,6 +63,14 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "app.ResponseMessage": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Segment": {
             "type": "object",
             "properties": {
