@@ -89,7 +89,7 @@ func (app *Application) PostDataLink(c *gin.Context) {
 		}
 
 		// Выполняем POST запрос на указанный URL
-		url := "http://localhost:8082/api/get-message"
+		url := "http://0.0.0.0:8082/api/get-message"
 		resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
 		if err != nil {
 			fmt.Println("Ошибка при выполнении запроса:", err)
